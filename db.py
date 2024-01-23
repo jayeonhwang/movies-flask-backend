@@ -169,5 +169,19 @@ def users_find_by_id(id):
     ).fetchone()
     return dict(row)
 
+def users_update_by_id(id, name,email,password):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE users SET name = ?, email = ?, password = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (name, email, password, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+
 
 
