@@ -64,10 +64,21 @@ def movies_create(title,director, genre , runtime, rating):
     row = conn.execute(
         """
         INSERT INTO movies (title,director, genre , runtime, rating)
-        VALUES (?, ?, ?, ?, ? )
+        VALUES ( ?, ?, ?, ?, ? )
         RETURNING *
         """,
-        (title, director, genre , runtime, rating),
+        (id. title, director, genre , runtime, rating),
     ).fetchone()
     conn.commit()
+    return dict(row)
+
+def movies_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM movies
+        WHERE id = ?
+        """,
+        id,
+    ).fetchone()
     return dict(row)

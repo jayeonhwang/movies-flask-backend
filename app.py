@@ -20,3 +20,6 @@ def create():
     runtime = request.form.get("runtime")
     rating = request.form.get("rating")
     return db.movies_create(title, director, genre, runtime, rating)
+@app.route("/movies/<id>.json")
+def show(id):
+    return db.movies_find_by_id(id)
