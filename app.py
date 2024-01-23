@@ -43,4 +43,9 @@ def destroy(id):
 def index_user():
     return db.users_all()
 
-
+@app.route("/users.json", methods=["POST"])
+def create_user():
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    return db.users_create(name, email, password)

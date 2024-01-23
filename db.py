@@ -32,7 +32,7 @@ def initial_setup():
     conn.execute("""
         CREATE TABLE users (
             id INTEGER PRIMARY KEY NOT NULL,
-            username TEXT,
+            name TEXT,
             email TEXT,
             password TEXT
         );
@@ -143,6 +143,22 @@ def users_all():
         """
         ).fetchall()
     return [dict(row) for row in rows]
+
+    
+def users_create(name, email, password):
+    conn = connect_to_db()
+    row = conn.execute(
+      """
+      INSERT INTO users (name, email, password)
+      VALUES (?, ?, ?)
+      RETURNING *
+      """,
+      (name, email, password),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+
     
     
 
