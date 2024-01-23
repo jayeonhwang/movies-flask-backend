@@ -32,7 +32,6 @@ def initial_setup():
     movies_seed_data = [
         ("Oppenheimer", "Christopher Nolan", "historical drama", 180, 9),
         ("Barbie", "Greta Gerwing", "adventure/comedy", 154, 8),
-        ("The Holdovers","Alexander Payne", 133, 9),
     ]
     conn.executemany(
         """
@@ -49,3 +48,14 @@ def initial_setup():
 
 if __name__ == "__main__":
     initial_setup()
+
+def movies_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM movies
+        """
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
