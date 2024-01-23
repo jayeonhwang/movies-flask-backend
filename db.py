@@ -59,15 +59,15 @@ def movies_all():
     return [dict(row) for row in rows]
 
 
-def movies_create(title,director, genre , runtime, rating):
+def movies_create(title, director, genre , runtime, rating):
     conn = connect_to_db()
     row = conn.execute(
         """
-        INSERT INTO movies (title,director, genre , runtime, rating)
+        INSERT INTO movies (title, director, genre , runtime, rating)
         VALUES ( ?, ?, ?, ?, ? )
         RETURNING *
         """,
-        (id. title, director, genre , runtime, rating),
+        (title, director, genre , runtime, rating),
     ).fetchone()
     conn.commit()
     return dict(row)
@@ -81,4 +81,17 @@ def movies_find_by_id(id):
         """,
         id,
     ).fetchone()
+    return dict(row)
+
+def movies_update_by_id (id, title, director, genre , runtime, rating):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE movies SET title = ?, director = ?, genre = ? , runtime = ?,rating = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (title, director, genre , runtime, rating, id),
+    ).fetchone()
+    conn.commit()
     return dict(row)
