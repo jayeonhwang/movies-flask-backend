@@ -158,10 +158,16 @@ def users_create(name, email, password):
     conn.commit()
     return dict(row)
 
-
-    
-    
-
+def users_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM users
+        WHERE id = ?
+        """,
+        id,
+    ).fetchone()
+    return dict(row)
 
 
 

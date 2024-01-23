@@ -49,3 +49,7 @@ def create_user():
     email = request.form.get("email")
     password = request.form.get("password")
     return db.users_create(name, email, password)
+
+@app.route("/users/<id>.json")
+def show_user(id):
+    return db.users_find_by_id(id)
