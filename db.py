@@ -183,5 +183,15 @@ def users_update_by_id(id, name,email,password):
     return dict(row)
 
 
-
+def users_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from users
+        WHERE id = ?
+        """,
+        id,
+    )
+    conn.commit()
+    return {"message": "user destroyed successfully"}
 

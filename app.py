@@ -60,3 +60,7 @@ def update_user(id):
     email = request.form.get("email")
     password = request.form.get("password")
     return db.users_update_by_id(id, name, email, password)
+
+@app.route("/users/<id>.json", methods=["DELETE"])
+def destroy_user(id):
+    return db.users_destroy_by_id(id)
