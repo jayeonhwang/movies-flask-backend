@@ -38,3 +38,9 @@ def update(id):
 @app.route("/movies/<id>.json", methods=["DELETE"])
 def destroy(id):
     return db.movies_destroy_by_id(id)
+
+@app.route("/users.json")
+def index_user():
+    return db.users_all()
+
+
