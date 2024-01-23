@@ -8,25 +8,36 @@ def connect_to_db():
 
 
 def initial_setup():
-    with connect_to_db() as conn:
-      conn = connect_to_db()
-      conn.execute(
-          """
-          DROP TABLE IF EXISTS movies;
-          """
+   
+    conn = connect_to_db()
+    conn.execute(
+      """
+      DROP TABLE IF EXISTS movies;
+      """
       )
-      conn.execute(
-          """
-          CREATE TABLE movies (
-            id INTEGER PRIMARY KEY NOT NULL,
-            title TEXT,
-            director TEXT,
-            genre TEXT,
-            runtime INTEGER,
-            rating INTEGER
-          );
-          """
+    conn.execute(
+      """
+       CREATE TABLE movies (
+        id INTEGER PRIMARY KEY NOT NULL,
+        title TEXT,
+        director TEXT,
+        genre TEXT,
+        runtime INTEGER,
+        rating INTEGER
+      );
+      """
     )
+
+    conn.execute("DROP TABLE IF EXISTS users;")
+    conn.execute("""
+        CREATE TABLE users (
+            id INTEGER PRIMARY KEY NOT NULL,
+            name TEXT,
+            email TEXT,
+            password TEXT
+        );
+    """)
+    
     conn.commit()
     print("Table created successfully")
 
@@ -41,16 +52,29 @@ def initial_setup():
         """,
         movies_seed_data,
     )
+
+
+    users_seed_data = [
+        ("user1", "user1@email.com", "password"),
+        ("user2", "user2@email.com", "password"),
+        ("user3", "user3@email.com", "password")
+      ]
+    
+    conn.executemany(
+        """
+        INSERT INTO users (name, email, password)
+        VALUES (?,?,?)
+        """,
+        users_seed_data,
+    )
+    
     conn.commit()
     print("Seed data created successfully")
 
     conn.close()
 
-def initialize_database():
-    initial_setup()
-
 if __name__ == "__main__":
-    initialize_database()
+    initial_setup()
 
 def movies_all():
     conn = connect_to_db()
@@ -110,3 +134,64 @@ def movies_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "Movies destroyed successfully"}
+
+def users_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM users
+        """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+    
+def users_create(name, email, password):
+    conn = connect_to_db()
+    row = conn.execute(
+      """
+      INSERT INTO users (name, email, password)
+      VALUES (?, ?, ?)
+      RETURNING *
+      """,
+      (name, email, password),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def users_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM users
+        WHERE id = ?
+        """,
+        id,
+    ).fetchone()
+    return dict(row)
+
+def users_update_by_id(id, name,email,password):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE users SET name = ?, email = ?, password = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (name, email, password, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+
+def users_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from users
+        WHERE id = ?
+        """,
+        id,
+    )
+    conn.commit()
+    return {"message": "user destroyed successfully"}
+
