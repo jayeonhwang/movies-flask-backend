@@ -8,23 +8,24 @@ def connect_to_db():
 
 
 def initial_setup():
-    conn = connect_to_db()
-    conn.execute(
-        """
-        DROP TABLE IF EXISTS movies;
-        """
-    )
-    conn.execute(
-        """
-        CREATE TABLE movies (
-          id INTEGER PRIMARY KEY NOT NULL,
-          title TEXT,
-          director TEXT,
-          genre TEXT,
-          runtime INTEGER,
-          rating INTEGER
-        );
-        """
+    with connect_to_db() as conn:
+      conn = connect_to_db()
+      conn.execute(
+          """
+          DROP TABLE IF EXISTS movies;
+          """
+      )
+      conn.execute(
+          """
+          CREATE TABLE movies (
+            id INTEGER PRIMARY KEY NOT NULL,
+            title TEXT,
+            director TEXT,
+            genre TEXT,
+            runtime INTEGER,
+            rating INTEGER
+          );
+          """
     )
     conn.commit()
     print("Table created successfully")
@@ -45,9 +46,11 @@ def initial_setup():
 
     conn.close()
 
+def initialize_database():
+    initial_setup()
 
 if __name__ == "__main__":
-    initial_setup()
+    initialize_database()
 
 def movies_all():
     conn = connect_to_db()
