@@ -17,7 +17,7 @@ def initial_setup():
       )
     conn.execute(
       """
-       CREATE TABLE movies (
+       CREATE TABLE movies(
         id INTEGER PRIMARY KEY NOT NULL,
         title TEXT,
         director TEXT,
@@ -37,20 +37,6 @@ def initial_setup():
             password TEXT
         );
     """)
-
-    conn.execute("DROP TABLE IF EXISTS movies;")
-    conn.execute("""
-        CREATE TABLE user_movies (
-            user_id INTEGER,
-            movie_id INTEGER,
-            rating INTEGER,
-            PRIMARY KEY (user_id, movie_id),
-            FOREIGN KEY (user_id) REFERENCES users (id),
-            FOREIGN KEY (movie_id) REFERENCES movies (id)
-        );
-    """)
-
-
     
     conn.commit()
     print("Table created successfully")
