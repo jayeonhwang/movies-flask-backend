@@ -38,6 +38,43 @@ def initial_setup():
         );
     """)
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    conn.execute(
+        """
+        DROP TABLE IF EXISTS reviews
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE reviews (
+            id INTEGER PRIMARY KEY NOT NULL,
+            user_id INTEGER,
+            movie_id INTEGER, 
+            review TEXT,
+            FOREIGN KEY (movie_id) REFERENCES movies (id),
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        """
+    )
+
     conn.commit()
     print("Table created successfully")
 
@@ -194,4 +231,64 @@ def users_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "user destroyed successfully"}
+
+def reviews_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM reviews
+        """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+    
+def reviews_create(user_id, movie_id, review):
+    conn = connect_to_db()
+    row = conn.execute(
+      """
+      INSERT INTO reviews (user_id, movie_id, review)
+      VALUES (?, ?, ?)
+      RETURNING *
+      """,
+      (user_id, movie_id, review),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def reviews_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM reviews
+        WHERE id = ?
+        """,
+        id,
+    ).fetchone()
+    return dict(row)
+
+def reviews_update_by_id(id, user_id, movie_id, review):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE reviews SET user_id = ?, movie_id = ?, review = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (user_id, movie_id, review, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+
+def reviews_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from reviews
+        WHERE id = ?
+        """,
+        id,
+    )
+    conn.commit()
+    return {"message": "review destroyed successfully"}
 
