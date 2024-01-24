@@ -276,3 +276,63 @@ def categories_destroy_by_id(id):
     conn.commit()
     return {"message": "categories destroyed successfully"}
 
+
+def nominate_categories_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM nominate_categories;
+        """
+        ).fetchall()
+    
+    return [dict(row) for row in rows]
+
+def nominate_categories_create(movie_id, categories_id):
+    conn = connect_to_db()
+    row = conn.execute(
+      """
+      INSERT INTO nominate_categories (movie_id, categories_id)
+      VALUES (?, ?)
+      RETURNING *
+      """,
+      (movie_id, categories_id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def nominate_categories_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM nominate_categories
+        WHERE id = ?
+        """,
+        id,
+    ).fetchone()
+    return dict(row)
+
+def nominate_categories_update_by_id(movie_id, categories_id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE nominate_categories SET movie_id = ?, categories_id
+        WHERE id = ?
+        RETURNING *
+        """,
+        (movie_id, categories_id, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def nominate_categories_destroy_by_id(movie_id, categories_id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from nominate_categories
+        WHERE id = ?
+        """,
+        id,
+    )
+    conn.commit()
+    return {"message": "user destroyed successfully"}
+

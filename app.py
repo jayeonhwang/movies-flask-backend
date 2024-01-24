@@ -83,3 +83,27 @@ def update_categories(id):
 @app.route("/categories/<id>.json", methods=["DELETE"])
 def destroy_categories(id):
     return db.categories_destroy_by_id(id)
+
+@app.route("/nominate.json")
+def index_nominate():
+    return db.nominate_categories_all()
+
+@app.route("/nominate.json", methods=["POST"])
+def create_nominate():
+    movie_id = request.form.get("movie_id")
+    categories_id = request.form.get("categories_id")
+    return db.nominate_categories_create(movie_id, categories_id)
+
+@app.route("/nominate/<id>.json")
+def show_nominate(id):
+    return db.nominate_categories_find_by_id(id)
+
+@app.route("/nominate/<id>.json", methods=["PATCH"])
+def update_nominate(id):
+    movie_id = request.form.get("movie_id")
+    categories_id = request.form.get("categories_id")
+    return db.nominate_categories_update_by_id(id, movie_id, categorie_id)
+
+@app.route("/nominate/<id>.json", methods=["DELETE"])
+def destroy_nominate(id):
+    return db.nominate_categories_destroy_by_id(id)
