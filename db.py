@@ -39,26 +39,8 @@ def initial_setup():
         );
     """)
 
-    conn.execute("DROP TABLE IF EXISTS categories;")
-    conn.execute(
-        """
-        CREATE TABLE categories (
-            id INTEGER PRIMARY KEY NOT NULL,
-            name TEXT
-        );
-    """)
-    conn.execute("DROP TABLE IF EXISTS nominate_categories;")
-    conn.execute(
-    """
-    CREATE TABLE nominate_categories (
-        id INTEGER PRIMARY KEY NOT NULL,
-        movie_id INTEGER,
-        categories_id INTEGER,
-        FOREIGN KEY (movie_id) REFERENCES movies (id),
-        FOREIGN KEY (categories_id) REFERENCES categories (id)
-    );
-    """
-)
+
+
 
     conn.commit()
     print("Table created successfully")
@@ -88,23 +70,6 @@ def initial_setup():
         """,
         users_seed_data,
     )
-
-    categories_seed_data = [
-        ("Best Picture",),
-        ("Best Director",),
-        ("Best Actor",),
-      ]
-    
-    conn.executemany(
-        """
-        INSERT INTO categories (name)
-        VALUES (?)
-        """,
-        categories_seed_data,
-    )
-    
-    conn.commit()
-    print("Seed data created successfully")
 
     conn.close()
 
@@ -229,110 +194,4 @@ def users_destroy_by_id(id):
     conn.commit()
     return {"message": "user destroyed successfully"}
 
-def categories_all():
-    conn = connect_to_db()
-    rows = conn.execute(
-        """
-        SELECT * FROM categories
-        """
-        ).fetchall()
-    return [dict(row) for row in rows]
-
-def categories_create(name):
-    conn = connect_to_db()
-    row = conn.execute(
-      """
-      INSERT INTO categories (name)
-      VALUES (?)
-      RETURNING *
-      """,
-     (name,),
-    ).fetchone()
-    conn.commit()
-    return dict(row)
-
-def categories_update_by_id(id, name):
-    conn = connect_to_db()
-    row = conn.execute(
-        """
-        UPDATE categories SET name = ?
-        WHERE id = ?
-        RETURNING *
-        """,
-        (name, id),
-    ).fetchone()
-    conn.commit()
-    return dict(row)
-
-def categories_destroy_by_id(id):
-    conn = connect_to_db()
-    row = conn.execute(
-        """
-        DELETE from categories 
-        WHERE id = ?
-        """,
-        id,
-    )
-    conn.commit()
-    return {"message": "categories destroyed successfully"}
-
-
-def nominate_categories_all():
-    conn = connect_to_db()
-    rows = conn.execute(
-        """
-        SELECT * FROM nominate_categories;
-        """
-        ).fetchall()
-    
-    return [dict(row) for row in rows]
-
-def nominate_categories_create(movie_id, categories_id):
-    conn = connect_to_db()
-    row = conn.execute(
-      """
-      INSERT INTO nominate_categories (movie_id, categories_id)
-      VALUES (?, ?)
-      RETURNING *
-      """,
-      (movie_id, categories_id),
-    ).fetchone()
-    conn.commit()
-    return dict(row)
-
-def nominate_categories_find_by_id(id):
-    conn = connect_to_db()
-    row = conn.execute(
-        """
-        SELECT * FROM nominate_categories
-        WHERE id = ?
-        """,
-        id,
-    ).fetchone()
-    return dict(row)
-
-def nominate_categories_update_by_id(movie_id, categories_id):
-    conn = connect_to_db()
-    row = conn.execute(
-        """
-        UPDATE nominate_categories SET movie_id = ?, categories_id
-        WHERE id = ?
-        RETURNING *
-        """,
-        (movie_id, categories_id, id),
-    ).fetchone()
-    conn.commit()
-    return dict(row)
-
-def nominate_categories_destroy_by_id(movie_id, categorie_id):
-    conn = connect_to_db()
-    row = conn.execute(
-        """
-        DELETE from nominate_categories
-        WHERE id = ?
-        """,
-        id,
-    )
-    conn.commit()
-    return {"message": "user destroyed successfully"}
 
