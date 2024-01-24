@@ -421,4 +421,3 @@ def nominate_categories_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "user destroyed successfully"}
-
