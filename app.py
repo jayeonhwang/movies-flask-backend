@@ -64,3 +64,22 @@ def update_user(id):
 @app.route("/users/<id>.json", methods=["DELETE"])
 def destroy_user(id):
     return db.users_destroy_by_id(id)
+
+
+@app.route("/categories.json")
+def index_categories():
+    return db.categories_all()
+
+@app.route("/categories.json", methods=["POST"])
+def create_categories():
+    name = request.form.get("name")
+    return db.categories_create(name)
+
+@app.route("/categories/<id>.json", methods=["PATCH"])
+def update_categories(id):
+    name = request.form.get("name")
+    return db.categories_update_by_id(id, name,)
+
+@app.route("/categories/<id>.json", methods=["DELETE"])
+def destroy_categories(id):
+    return db.categories_destroy_by_id(id)

@@ -10,6 +10,7 @@ def connect_to_db():
 def initial_setup():
    
     conn = connect_to_db()
+
     conn.execute(
       """
       DROP TABLE IF EXISTS movies;
@@ -37,7 +38,28 @@ def initial_setup():
             password TEXT
         );
     """)
-    
+
+    conn.execute("DROP TABLE IF EXISTS categories;")
+    conn.execute(
+        """
+        CREATE TABLE categories (
+            id INTEGER PRIMARY KEY NOT NULL,
+            name TEXT
+        );
+    """)
+    conn.execute("DROP TABLE IF EXISTS nominate_categories;")
+    conn.execute(
+    """
+    CREATE TABLE nominate_categories (
+        id INTEGER PRIMARY KEY NOT NULL,
+        movie_id INTEGER,
+        categories_id INTEGER,
+        FOREIGN KEY (movie_id) REFERENCES movies (id),
+        FOREIGN KEY (categories_id) REFERENCES categories (id)
+    );
+    """
+)
+
     conn.commit()
     print("Table created successfully")
 
@@ -53,7 +75,6 @@ def initial_setup():
         movies_seed_data,
     )
 
-
     users_seed_data = [
         ("user1", "user1@email.com", "password"),
         ("user2", "user2@email.com", "password"),
@@ -66,6 +87,20 @@ def initial_setup():
         VALUES (?,?,?)
         """,
         users_seed_data,
+    )
+
+    categories_seed_data = [
+        ("Best Picture",),
+        ("Best Director",),
+        ("Best Actor",),
+      ]
+    
+    conn.executemany(
+        """
+        INSERT INTO categories (name)
+        VALUES (?)
+        """,
+        categories_seed_data,
     )
     
     conn.commit()
@@ -182,7 +217,6 @@ def users_update_by_id(id, name,email,password):
     conn.commit()
     return dict(row)
 
-
 def users_destroy_by_id(id):
     conn = connect_to_db()
     row = conn.execute(
@@ -194,4 +228,51 @@ def users_destroy_by_id(id):
     )
     conn.commit()
     return {"message": "user destroyed successfully"}
+
+def categories_all():
+    conn = connect_to_db()
+    rows = conn.execute(
+        """
+        SELECT * FROM categories
+        """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+def categories_create(name):
+    conn = connect_to_db()
+    row = conn.execute(
+      """
+      INSERT INTO categories (name)
+      VALUES (?)
+      RETURNING *
+      """,
+     (name,),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def categories_update_by_id(id, name):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE categories SET name = ?
+        WHERE id = ?
+        RETURNING *
+        """,
+        (name, id),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+def categories_destroy_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        DELETE from categories 
+        WHERE id = ?
+        """,
+        id,
+    )
+    conn.commit()
+    return {"message": "categories destroyed successfully"}
 
