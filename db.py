@@ -324,7 +324,7 @@ def nominate_categories_update_by_id(movie_id, categories_id):
     conn.commit()
     return dict(row)
 
-def nominate_categories_destroy_by_id(movie_id, categories_id):
+def nominate_categories_destroy_by_id(movie_id, categorie_id):
     conn = connect_to_db()
     row = conn.execute(
         """
